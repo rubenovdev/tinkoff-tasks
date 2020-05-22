@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { connect } from 'react-redux'
+import { connect } from '../../connect'
 import { inc, dec } from '../../actions'
 import { State } from '../../models/store'
 
@@ -18,10 +18,14 @@ const App = connect(
   (state: State) => ({
     count: state.count,
   }),
-  {
-    inc,
-    dec,
-  }
+  (dispatch) => ({
+    inc: () => {
+      dispatch(inc())
+    },
+    dec: () => {
+      dispatch(dec())
+    },
+  })
 )(AppView)
 
 export default App
