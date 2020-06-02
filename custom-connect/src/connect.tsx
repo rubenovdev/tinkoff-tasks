@@ -1,4 +1,4 @@
-import React, { createContext, Dispatch, FC, useState } from 'react'
+import React, { createContext, Dispatch, FC, useState, useEffect } from 'react'
 import { Store } from 'redux'
 import { State } from './models/store'
 
@@ -25,9 +25,13 @@ export function connect<SProps = {}, DProps = {}, OProps = {}, MProps = SProps &
     const ConnectedComponent = ({ ownProps, store }: { ownProps: OProps; store: Store }) => {
       const [stateProps, setStateProps] = useState(mapStateToProps(store.getState()))
 
-      store.subscribe(() => {
-        setStateProps(mapStateToProps(store.getState()))
-      })
+      useEffect(() => {
+        const unsubscribe = store.subscribe(() => {
+          setStateProps(mapStateToProps(store.getState()))
+        })
+
+        return unsubscribe
+      }, [])
 
       const dispatchProps = mapDispatchToProps(store.dispatch)
       const mergedProps = mergeProps(stateProps, dispatchProps, ownProps)

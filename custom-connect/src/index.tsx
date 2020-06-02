@@ -1,11 +1,49 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
+import { Action, Dispatch, MiddlewareAPI, Store } from 'redux'
 import { Provider } from './connect'
 import App from './components/App/App'
 import reducer from './reducer'
+import { State } from './models/store'
 
-const store = createStore(reducer)
+const middleware = (middlewareStore: MiddlewareAPI) => (next: (param: any) => void) => (
+  action: Action | ((dispatch: Dispatch, getState: () => State) => void)
+) => {
+  if (typeof action === 'function') {
+    return action(middlewareStore.dispatch, middlewareStore.getState)
+  }
+
+  next(action)
+}
+
+console.log('middleware: ', middleware)
+
+const customCreateStore: (
+  rootReducer: (state: State | undefined, action: Action) => State
+) => Store = (rootReducer) => {
+  let state = rootReducer(undefined, { type: 'INIT_STORE' })
+  let subscribeFunctions: (() => void)[] = []
+
+  return {
+    getState: () => state,
+    dispatch: (action) => {
+      state = rootReducer(state, action)
+      subscribeFunctions.forEach((fn) => fn())
+      return action
+    },
+    subscribe: (fn) => {
+      subscribeFunctions.push(fn)
+
+      return () => {
+        subscribeFunctions = subscribeFunctions.filter((item) => item !== fn)
+      }
+    },
+    replaceReducer: () => {},
+    [Symbol.observable]: () => ({} as any),
+  }
+}
+
+const store = customCreateStore(reducer)
 
 ;(window as any).store = store
 
