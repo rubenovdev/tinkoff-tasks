@@ -1,10 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Action, Dispatch, MiddlewareAPI, Store } from 'redux'
+import * as Sentry from '@sentry/browser'
+import { sentryDSN } from './constants/sentry'
 import { Provider } from './connect'
 import App from './components/App/App'
 import reducer from './reducer'
 import { State } from './models/store'
+
+Sentry.init({ dsn: sentryDSN })
 
 const middleware = (middlewareStore: MiddlewareAPI) => (next: (param: any) => void) => (
   action: Action | ((dispatch: Dispatch, getState: () => State) => void)
