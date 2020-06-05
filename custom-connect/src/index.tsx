@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Action, Dispatch, MiddlewareAPI, Store, applyMiddleware } from 'redux'
+import { Action, Dispatch, MiddlewareAPI, Store } from 'redux'
 import * as Sentry from '@sentry/browser'
 import { sentryDSN } from './constants/sentry'
 import { Provider } from './connect'
