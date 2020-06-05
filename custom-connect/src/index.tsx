@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Action, Dispatch, MiddlewareAPI, Store } from 'redux'
+import { Action, Dispatch, MiddlewareAPI, Store, applyMiddleware } from 'redux'
 import * as Sentry from '@sentry/browser'
 import { sentryDSN } from './constants/sentry'
 import { Provider } from './connect'
@@ -22,9 +22,9 @@ const middleware = (middlewareStore: MiddlewareAPI) => (next: (param: any) => vo
 
 console.log('middleware: ', middleware)
 
-const customCreateStore: (
-  rootReducer: (state: State | undefined, action: Action) => State
-) => Store = (rootReducer) => {
+const createStore: (rootReducer: (state: State | undefined, action: Action) => State) => Store = (
+  rootReducer
+) => {
   let state = rootReducer(undefined, { type: 'INIT_STORE' })
   let subscribeFunctions: (() => void)[] = []
 
@@ -47,7 +47,7 @@ const customCreateStore: (
   }
 }
 
-const store = customCreateStore(reducer)
+const store = createStore(reducer)
 
 ;(window as any).store = store
 
